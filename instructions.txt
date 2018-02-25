@@ -1,0 +1,131 @@
+Materials used:
+
+Laser printer with very good toner coverage (fresh toner, toner density set to max)
+Cupric Chloride etchant ( https://www.youtube.com/watch?v=V8mHiFYmlBc ) or any other PCB etchant
+PCB fab in a box starter kit ( https://pcbfx.com/main_site/pages/products/starter_kit.html )
+0.1 or 0.15mm copper film (for stencils, make sure it's actually copper not copper-coated Al. Art supply stores sell it)
+Aoyue W002 lead-free solder paste
+Solder paste spreading tool (thin metal or plastic strip)
+Tweezers
+Sponges (dishwashing sponge, use rough side for scrubbing copper, soft side for etching)
+Nitrile gloves (lots!)
+Isopropyl alcohol for cleaning all the things
+Acetone for dissolving toner
+Tin-plating solution (we used https://www.buerklin.com/en/tin-powder-for-solder-baths/p/13l217 )
+Lots and lots and lots of paper towels
+Small polypropylene(!!!) containers for tin plating bath, etchant, and water
+Laminator hacked for higher temp operation
+Big trash bag
+
+For rework:
+Soldering iron
+Flux
+Really thin desoldering braid
+Really thin solder
+
+BOM for board:
+4x 27R resistors, 0603, 1%
+3x 330R resistors, 0603, 1%
+1x 0.1u cer cap, 0603, 50V
+2x 22u cer cap, 1206, 25V
+2x 47p cer cap, 0603, 50V
+1x USB connector, ZX62-AB-5PA(31)
+1x ESP-WROOM-32 module
+1x 01x10 pin header, SMD, like M20-8771042 or NREC010SABC-M30RC
+1x FT231XS
+8x RGB LED, ASMB-MTB0-0A3A2
+2x push buttons, FSM2JMTR
+1x voltage regulator, LD1117AS33TR
+
+
+Instructions:
+
+Install kicad 4.0.7
+Copy template folder to new folder with your own name
+Open project file with kicad (ignore any missing library warnings)
+Open eeschema
+Run ERC
+Run CvPcb, make sure all items have an associated footprint, look at footprint if you like
+Generate netlist (click net, click generate, click save)
+Click on pcbnew button, say yes to create a board
+Import netlist
+Click view-> switch canvas to default
+Click footprint mode button
+Right-click, global spread and place, spread out all footprints
+View -> switch canvas to opengl
+Rotate (R) esp32 and connector right way round
+Move (M) RGB LEDs to bottom in correct order and rotate (R) with pin1 top-right
+Disabling render/text front might help with seeing things more clearly
+To help align the LEDs, use a custom grid - dimensions-grid-millimeters, 7x7 (for example)
+Switch grid to user grid, then move LEDs so they align on grid.
+Switch grid back to 0.25mm to continue
+Move USB port to right side of board
+Pin header to left side of board
+Two buttons close to their pins
+Big caps near voltage regulator
+0.1u cap next to ESP32 supply pins
+Try to arrange things for minimum crossing lines
+Design rules: Default clearance 0.25 default track width 0.3
+Design rules: global design rules, custom track sizes 0.4 and 0.6
+Dimensions, pad mask clearance, paste clearance -0.1mm
+
+Place parts, and then we start working in exciting mode (X)
+Press X, then E
+Make sure shove mode is selected, allow DRC violation is not selected
+Click on one end of a trace, then move it to its goal
+ESC to exit exciting mode, X to reenter it
+ctrl-z for undo, u and i for select segment, del for delete
+For the power traces use 0.6mm
+Add keepout areas to ESP32 module (F.Cu, no copper pour)
+-antenna region
+-below gnd trace
+Add copper pour around board (grid 1mm)
+Select layer edge.cuts
+Draw board outline
+Select layer F.Cu
+Draw your name, 2.5mm tall, 2.5mm wide letters using text tool
+Hit B to redraw zones
+Save!
+Use 3D viewer to admire your board
+
+Rendering for etching:
+for board: plot, format: ps
+disable all layers, enable f.cu
+disable all options, enable MIRRORED plot, force A4 output
+plot
+
+for stencil: plot, format: ps
+disable all layers, enable f.paste
+disable all options, enable Exclude PCB edge layer, NEGATIVE plot, force A4 output
+plot
+
+For PCB:
+Open printer tray, make mark in corner of paper, close tray
+Print f.cu file
+Cut piece of transfer paper slightly bigger than your design, tape (using paper tape) onto paper so it covers the design and the tape is outside the design area
+Insert same sheet of paper into printer in exact same orientation (mark in same corner)
+Print again, settings: black and white print, high resolution, paper type heavy
+Cut out the design from the transfer paper
+Cut piece of PCB slightly bigger than the design
+Carefully scrub and degrease the PCB surface (use gloves from now on)
+Place transfer paper on PCB surface and run through HOT laminator a few times (2 times is enough with hacked laminator)
+Drop in water WHILE STILL HOT
+After a few minutes paper will separate, slide it off sideways
+Dry PCB COMPLETELY
+Place toner reactive film on COMPLETELY DRY PCB so it overlaps one edge, dull side to copper
+Run through laminator (one below hottest for modified, hottest for unmodified laminator) once
+As it goes into laminator, pull the green film tight to avoid creasing
+Allow to cool completely, then peel back film
+Etch by dipping sponge into etchant then stroking the PCB with sponge until done
+When done etching, wipe everything with paper, then clean with alcohol, then clean with acetone
+When done cleaning, scrub copper surface a bit with rough side of sponge, then dip in tin plating solution and leave for a while
+
+Repeat same process for stencil, except:
+After green film is applied, tape the back of the stencil and the exposed copper areas around the design in the front
+
+When you are done etching the stencil, the PCB will be ready.
+
+To clean PCB that was in tin plating solution:
+Gently take it out, then dry it ENTIRELY with a towel, dip in cold water, dry ENTIRELY again, then wash it carefully under WARM water. Once dry, you can apply paste using the stencil.
+
+Be careful to not overheat during reflow - these boards are thin and the epoxy will delaminate above 270C.
